@@ -18,7 +18,13 @@ export default function ControlPanel({ params, setParams, compareMode, setCompar
           <span className="section-kicker">Try changing</span>
           <h2>Sliders</h2>
         </div>
-        <button type="button" className="ghost-button" onClick={onReset}>Reset</button>
+        <button type="button" className="ghost-button" onClick={onReset} aria-label="Reset">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+            <path d="M12 6v2a6 6 0 1 1-5 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 4v4h-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span style={{ marginLeft: 8 }}>Reset</span>
+        </button>
       </div>
 
       <div className="control-stack">
@@ -56,6 +62,8 @@ export default function ControlPanel({ params, setParams, compareMode, setCompar
           <small>See how positive and negative charges bend differently.</small>
         </span>
       </label>
+
+      {/* light theme toggle removed per request */}
     </div>
   );
 }

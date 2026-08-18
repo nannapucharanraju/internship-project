@@ -14,16 +14,36 @@ export default function SimulationCanvas({ params, compareMode, showForce = true
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // make canvas responsive and high-DPI
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+    };
+
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
     const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    const cx = width / 2;
-    const cy = height / 2;
     const start = performance.now();
 
     function frame(now) {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // use CSS pixel dimensions for layout calculations
+      const width = canvas.width / dpr;
+      const height = canvas.height / dpr;
+      const cx = width / 2;
+      const cy = height / 2;
       const dt = (now - start) / 1000;
 
+      // clear and set transform for crisp high-DPI rendering
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
       drawChamber(ctx, width, height, params.Bz);
 
@@ -56,7 +76,10 @@ export default function SimulationCanvas({ params, compareMode, showForce = true
     }
 
     animRef.current = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(animRef.current);
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      ro.disconnect();
+    };
   }, [params, compareMode, showForce]);
 
   return <canvas ref={canvasRef} width={640} height={480} className="sim-canvas" />;
